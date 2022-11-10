@@ -84,9 +84,36 @@
 <ul>
 <li><code>User Space</code>:   vi, cc, shell</li>
 <li><code>Kernel Space</code>:  fs, process managers, Mem Alloc, Access Ctrl</li>
-<li><code>Hardware</code>: RAM, CPU, Disk, Net</li>
+<li><code>Hardware</code>: RAM, CPU, Disk, Net,</li>
 </ul>
-<h3><a id="add-some-new" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>add some new</h3>
+<h2><a id="interfaces" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Interfaces</h2>
+<p>API for the kernel <code>syscalls</code></p>
+<pre><code class="language-c++">fd = open(&quot;out&quot;, 1) \\ is equal to O_WRONLY ??
+// ssize_t write(int fd, const void *buf, size_t nbyte);
+write(fd, &quot;hello\n&quot;)
+// fork();
+pid = fork(); 
+</code></pre>
+<h2><a id="why-challenging-interesting" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Why challenging &amp; interesting</h2>
+<ul>
+<li>unforgiving in kernel programming</li>
+<li>tensions
+<ul>
+<li>efficient - abstract</li>
+<li>Powerful - Simple API</li>
+<li>Flexible - Security</li>
+<li>多个因素形成的矛盾, 需要去克服掉</li>
+</ul>
+</li>
+<li>Interacte with different APIs</li>
+<li>Under the hood
+<ul>
+<li>is infrastructure itself, the OSs</li>
+<li></li>
+</ul>
+</li>
+</ul>
+<p>1</p>
 
     </div>
     <footer class="post-footer clearfix">
@@ -167,6 +194,8 @@
 
 
 
+
+<script src="asset/prism.js"></script>
 
         
       
