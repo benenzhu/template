@@ -109,11 +109,59 @@ pid = fork();
 <li>Under the hood
 <ul>
 <li>is infrastructure itself, the OSs</li>
-<li></li>
 </ul>
 </li>
 </ul>
-<p>1</p>
+<h2><a id="calss-structure" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Calss Structure</h2>
+<p>web site &amp; PIAZZA<br />
+Lectures:</p>
+<ul>
+<li>xv6 codes</li>
+<li>papers</li>
+<li>labs
+<ul>
+<li>hands on experiences</li>
+<li>start early</li>
+<li>many grades</li>
+</ul>
+</li>
+</ul>
+<h2><a id="syscalls" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Syscalls</h2>
+<p>all xv6 codes are easy to read<br />
+some codes:<br />
+<code>make</code><br />
+<code>make clean</code></p>
+<pre><code class="language-c++">// 不断循环从 0(stdin) 读取, 然后 write 到 1(stdout) 上去
+int main(){
+    char buf[64]; 
+    while(1) {
+        int n = read(0, buf, sizeof(buf));
+        if( n&lt;= 0)
+            break; 
+        write(1, buf, n);
+    }
+    exit(0); 
+}
+</code></pre>
+<pre><code class="language-c++">// 如何创建新的 fd
+int fd = open(&quot;output.txt&quot;, O_WRONLY | OCREATE); 
+write(fd, &quot;ooo\n&quot;, 4); 
+
+exit(0);
+</code></pre>
+<p>.<br />
+.<br />
+.<br />
+.<br />
+.<br />
+.<br />
+.<br />
+.<br />
+.<br />
+.<br />
+.<br />
+.<br />
+.</p>
 
     </div>
     <footer class="post-footer clearfix">
