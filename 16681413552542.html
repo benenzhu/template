@@ -86,6 +86,78 @@ And also the os and your apps should be too.</p>
 </blockquote>
 <p>(time isolation) Periodically change for apps and sheduller.<br />
 (memory isolation) Virtual Memorys.</p>
+<blockquote>
+<p>Unix Interfaces: carefully designed to abstracts the HW resources</p>
+</blockquote>
+<ul>
+<li>processes: CPUs</li>
+<li>exec: Mems <code>sbrk</code></li>
+<li>files: of Disk Blocks</li>
+</ul>
+<blockquote>
+<p>OS should be defensive</p>
+</blockquote>
+<ul>
+<li>app can't crash the OS</li>
+<li>app can't break out of its isolation</li>
+</ul>
+<blockquote>
+<p>means Strong Isolation between apps + OS</p>
+</blockquote>
+<p>typically using HW support.</p>
+<ol>
+<li>user/kernel modes</li>
+<li>virtual memory</li>
+</ol>
+<h3><a id="user-kernel-modes" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>user / kernel modes:</h3>
+<blockquote>
+<p>Privileged instructions on kernel modes</p>
+</blockquote>
+<ul>
+<li>munipulating HW, set page tables ...</li>
+<li>disable clocks</li>
+<li>interupts</li>
+</ul>
+<blockquote>
+<p>How to determine should run priviledged instructions?</p>
+</blockquote>
+<p>flag in processer: 1 is user, 0 is kernel<br />
+and instruction op code have 1 bit in that too.</p>
+<h3><a id="oss-provide-virutal-memroy" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>OSs provide virutal memroy</h3>
+<p>page table : vritual addr -&gt; physical addr<br />
+process has own page table<br />
+memory isolation</p>
+<h3><a id="entring-the-kernel" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Entring the kernel</h3>
+<p><code>ecall (n)</code> syscall number to invoke</p>
+<p>e.g.<br />
+<code>fork()</code> -&gt; <code>ecall [sys_fork]</code> to kernel</p>
+<p>kernel have hardware clock for interruption to seize back the control power</p>
+<blockquote>
+<p>why use c?<br />
+low level programming to success<br />
+not use c++ is because <code>linus dose not like c++</code></p>
+</blockquote>
+<h4><a id="kernel-trusted-computing-baes-tcb" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>kernel = trusted computing baes (TCB)</h4>
+<p>-&gt; kernel must have no bugs.<br />
+-&gt; kernel must treat processes as malicious</p>
+<h3><a id="what-should-be-runing-in-kernel-mode" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>what should be runing in kernel mode?</h3>
+<ul>
+<li>monolithic kernel design: all OSs runing in kernel mode
+<ul>
+<li>cons: too many code and -&gt; bugs</li>
+<li>pros: submodules have tight intergration =&gt; better performance</li>
+</ul>
+</li>
+<li>micro kernel design:
+<ul>
+<li>pros: get bugs outside the kernel (only IPC VM MULTIPLEX)<br />
+file system &amp; echo shell all run in user mode</li>
+<li>small kernel</li>
+<li>cons: double the syscall entries. how to get good performance?<br />
+so different to get high performance.</li>
+</ul>
+</li>
+</ul>
 <p>.<br />
 .<br />
 .<br />

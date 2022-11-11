@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       
-    l01 操作系统 - 
+    l01 操作系统 mit 6.s081 - 
     
     </title>
     
@@ -59,16 +59,30 @@
 <div class="container">
   <article class="post-container">
     <header class="post-header">
-        <h1 class="post-title">l01 操作系统</h1>
+        <h1 class="post-title">l01 操作系统 mit 6.s081</h1>
         <p class="post-date">
                 <span>Posted <time datetime="2022/11/10" itemprop="datePublished">2022/11/10</time></span>
             </p>
     </header>
 
     <div class="post-content clearfix">
-<p>准备开始看一下这个操作系统的 mit 6.s081 的课程啦</p>
+<h3><a id="%E5%87%86%E5%A4%87%E8%B5%84%E6%96%99" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>准备资料:</h3>
 <ul>
-<li>xv6 system</li>
+<li><a href="https://mit-public-courses-cn-translatio.gitbook.io/mit6-s081/">中文翻译站点</a></li>
+<li>xv6 system pdf: <a href="https://pdos.csail.mit.edu/6.S081/2022/xv6/book-riscv-rev3.pdf">https://pdos.csail.mit.edu/6.S081/2022/xv6/book-riscv-rev3.pdf</a></li>
+<li>作业布置: <a href="https://pdos.csail.mit.edu/6.828/2021/schedule.html">https://pdos.csail.mit.edu/6.828/2021/schedule.html</a></li>
+</ul>
+<h3><a id="%E8%A1%A5%E5%85%85%E8%B5%84%E6%96%99" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>补充资料:</h3>
+<ul>
+<li><a href="https://space.bilibili.com/1040264970/">xv6 操作系统的深入讲解</a></li>
+<li>xv6 中文文档(<a href="https://th0ar.gitbooks.io/xv6-chinese/content/index.html">https://th0ar.gitbooks.io/xv6-chinese/content/index.html</a>)</li>
+<li>xv6 关键源码逐行解读 + 整体架构分析(<a href="https://www.youtube.com/playlist?list=PLbtzT1TYeoMhTPzyTZboW_j7TPAnjv9XB">https://www.youtube.com/playlist?list=PLbtzT1TYeoMhTPzyTZboW_j7TPAnjv9XB</a>)</li>
+<li>资料汇总: PKU(<a href="https://github.com/PKUFlyingPig/MIT6.S081-2020fall">https://github.com/PKUFlyingPig/MIT6.S081-2020fall</a>)</li>
+<li><a href="https://zhuanlan.zhihu.com/p/567525198">如何生成 xv6 的 complie_commands.json</a>
+<ul>
+<li>直接 bear -- make qemu 即可, 好像是 clangd 的专用工具</li>
+</ul>
+</li>
 </ul>
 <h3><a id="purposes" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Purposes</h3>
 <ul>
@@ -230,6 +244,51 @@ if(pid == 0){
 }
 exit(0);
 </code></pre>
+<blockquote>
+<p>why <code>fork</code> and <code>exec</code> are separate calls?</p>
+</blockquote>
+<p>give the shell a chance to redirect the I/O</p>
+<blockquote>
+<p><code>dup</code> in shell</p>
+</blockquote>
+<p><code>ls ... &gt; tmp1 2&gt;&amp;1</code> 中 <code>2&gt;&amp;1</code> 告诉shell去 重定向 stderr 到 stdout</p>
+<pre><code class="language-c++">// testpipe.c: 测试管道的用法, 父进程和子进程交互, 同时重定向
+int main(){
+    int p[2];
+    char *argv[2] = {&quot;wc&quot;, 0};
+    pipe(p);  
+    if(fork() == 0){
+        close(0); // 关闭读
+        dup(p[0]); // 复制管道的读端
+        close(p[0]);
+        close(p[1]); 
+        exec(&quot;wc&quot;, argv); // 然后执行
+    } else {
+        close(p[0]);
+        write(p[1], &quot;hello world\n&quot;, 12); // 写入
+        close(p[1]);
+    }
+    exit(0); 
+}
+
+</code></pre>
+<h3><a id="pipe" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>pipe</h3>
+<p><code>read()</code> 等待由任何的数据被写入了, 或者所有的写端口都已经关闭了.</p>
+<blockquote>
+<p>是一个阻塞函数</p>
+</blockquote>
+<blockquote>
+<p>可以用 <code>mknod(&quot;name&quot;, int major, int minor)</code> 来创建一个设备文件</p>
+</blockquote>
+<p><code>inode</code> <code>links</code> <code>metadata</code><br />
+<code>fstat()</code> 用了查看 inode 的信息<br />
+<code>link('a', 'b')</code> 创建一个指向 a 的文件 b<br />
+<code>unlink()</code> 从文件系统中移除文件, 如果是最后一个的话, 代表着删除文件</p>
+<pre><code class="language-c++">// 如何创建一个临时文件, 然后之后删除他
+fd = open(&quot;/tmp/xyz&quot;, O_CREATE|O_RDWR);
+unlink(&quot;/tmp/xyz&quot;);
+</code></pre>
+<p>POSIX 标准规定了需要使用的 syscalls 的类型</p>
 <p>.<br />
 .<br />
 .<br />
