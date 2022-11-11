@@ -131,7 +131,8 @@ Lectures:</p>
 some codes:<br />
 <code>make</code><br />
 <code>make clean</code></p>
-<pre><code class="language-c++">// 不断循环从 0(stdin) 读取, 然后 write 到 1(stdout) 上去
+<pre><code class="language-c++">// copy.c
+// 不断循环从 0(stdin) 读取, 然后 write 到 1(stdout) 上去
 int main(){
     char buf[64]; 
     while(1) {
@@ -143,10 +144,90 @@ int main(){
     exit(0); 
 }
 </code></pre>
-<pre><code class="language-c++">// 如何创建新的 fd
+<pre><code class="language-c++">// read.c
+// 如何创建新的 fd
 int fd = open(&quot;output.txt&quot;, O_WRONLY | OCREATE); 
 write(fd, &quot;ooo\n&quot;, 4); 
 
+exit(0);
+</code></pre>
+<ul>
+<li>fd is indexing into a little table inside the kernel</li>
+<li>different process have different fd lists</li>
+</ul>
+<p>shell does some work, like: redirect I/O, exec cmds.</p>
+<blockquote>
+<p>Q: how to transfer to syscall?  如何陷入内核?</p>
+</blockquote>
+<p>ecall 函数好像是? 然后找出来具体的参数这些</p>
+<pre><code class="language-c++">//fork.c 
+int main(){
+    int pid = fork(); 
+    // 这个存在问题就是两个都运行的时候, 会交叠起来
+    printf(&quot;fork() return %d\n&quot;, pid); 
+    
+    if(pid == 0)
+        printf(&quot;child \n&quot;); 
+    else 
+        printf(&quot;parent\n&quot;);
+    
+    exit(0);
+}
+</code></pre>
+<blockquote>
+<p>Copy On Write happen when fork() calls</p>
+</blockquote>
+<pre><code class="language-c++">// exec.c
+// how shell works, to use fork() and to exec the commands
+// exec will keep the same dfs too
+int main(){
+    char *argv[] = {&quot;echo&quot;, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;, 0};
+    
+    exec(&quot;echo&quot;, argv);
+
+    // this should not happen 
+    printf(&quot;exec failed\n&quot;);
+    exit(0);
+}
+</code></pre>
+<pre><code class="language-c++">// forkexc.c: fork then exec the commands 
+int pid = fork();
+int status;
+if(pid == 0){
+    char *argv[] = {&quot;echo&quot;, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;, 0};
+    //exec(&quot;aaaecho&quot;, argv);
+    //     if that run will exit with 1
+    exec(&quot;echo&quot;, argv&quot;);
+    
+    // blow will never reach 
+    printf(&quot;exec failed\n&quot;);
+    exit(1);
+}else{
+    printf(&quot;parent waiting\n&quot;);
+    wait(&amp;status);
+    printf(&quot;the child exited with status %d\n&quot;, status);
+}
+exit(0);
+</code></pre>
+<blockquote>
+<p><code>wait</code> 等待子进程其中之一进行退出, 如果没有 child 的话, 会直接返回 -1</p>
+</blockquote>
+<h3><a id="%E5%A6%82%E4%BD%95%E7%BB%93%E5%90%88%E8%B5%B7%E6%9D%A5%E5%AE%9E%E7%8E%B0%E9%87%8D%E5%AE%9A%E5%90%91" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>如何结合起来实现重定向</h3>
+<blockquote>
+<p>fork 出来的子进程中, 关闭 1(stdout) 的fd, 然后打开新的文件就行</p>
+</blockquote>
+<pre><code class="language-c++">//redirect.c
+int pid = fork(); 
+if(pid == 0){
+    close(1);
+    // Open redirect to the minimum fd
+    open(&quot;output.txt&quot;, O_WRONLY | O_CREATE);
+    char *argv[] = {&quot;echo&quot;, &quot;a&quot;, &quot;b&quot;, &quot;c&quot;, 0};
+    exec(&quot;echo&quot;, argv);
+    printf(&quot;exec failed!\n&quot;);
+} else {
+    wait((int*) 0);
+}
 exit(0);
 </code></pre>
 <p>.<br />
